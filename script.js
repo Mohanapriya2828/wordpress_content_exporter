@@ -13,7 +13,6 @@ class AssignmentEditor {
 init() 
 {
     this.homeTab.addEventListener('click', () => this.toggleHomePanel());
-
     this.formatButtons.forEach(btn => {
       btn.type = 'button';
       btn.addEventListener('mousedown', e => {
@@ -72,9 +71,21 @@ updateButtonState() {
     if (this.fontSizeSelect) {
     this.fontSizeSelect.value = this.currentFontSize || "";
 }
+
+if (this.headingSelect) {
+    const sel = window.getSelection();
+    if (sel.rangeCount) {
+      let node = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentNode : sel.anchorNode;
+      if (this.editor.contains(node)) {
+        const heading = node.closest("h1, h2, h3, h4, h5, h6");
+        this.headingSelect.value = heading ? heading.tagName.toLowerCase() : "";
+      } else {
+        this.headingSelect.value = "";
+      }
+    }
+  }
   }
 }
-
 document.addEventListener('DOMContentLoaded', () => {
   new AssignmentEditor('editor');
 });
