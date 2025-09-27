@@ -132,6 +132,30 @@ if (linkBtn) linkBtn.addEventListener('click', () => {
   this.editor.focus();
 });
 
+const imageBtn = document.getElementById('insert-image');
+if (imageBtn) imageBtn.addEventListener('click', () => {
+  const url = prompt("Enter image URL:");
+  if (url) document.execCommand('insertImage', false, url);
+  this.editor.focus();
+});
+
+const tableBtn = document.getElementById('insert-table');
+if (tableBtn) tableBtn.addEventListener('click', () => {
+  const rows = parseInt(prompt("Rows:"), 10);
+  const cols = parseInt(prompt("Columns:"), 10);
+  if (rows > 0 && cols > 0) {
+    let table = '<table border="1">';
+    for (let r = 0; r < rows; r++) {
+      table += '<tr>';
+      for (let c = 0; c < cols; c++) table += '<td>&nbsp;</td>';
+      table += '</tr>';
+    }
+    table += '</table><br>';
+    document.execCommand('insertHTML', false, table);
+  }
+  this.editor.focus();
+});
+
 
 this.structureButtons.forEach(btn => {
   if (btn.id === "ulBtn" || btn.id === "olBtn") return;
