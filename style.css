@@ -9,20 +9,44 @@ body {
 header {
   background: #444;
   color: #fff;
-  text-align: center;
-  padding: 15px;
+  padding: 8px 15px;
+}
+
+header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+#ribbon {
+  background: #ddd;
+  border-bottom: 1px solid #aaa;
+  padding: 5px;
+}
+
+#ribbon button {
+  padding: 6px 12px;
+  font-size: 14px;
+  margin-right: 5px;
+  cursor: pointer;
 }
 
 #toolbar {
   background: #eee;
-  padding: 8px;
   border-bottom: 1px solid #ccc;
-  text-align: center;
+  padding: 8px;
 }
 
-#toolbar button, 
+.panel {
+  display: flex;
+  gap: 8px;
+}
+
+.panel.hidden {
+  display: none;
+}
+
+#toolbar button,
 #toolbar select {
-  margin: 0 5px;
   padding: 5px 10px;
   font-size: 14px;
 }

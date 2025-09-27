@@ -8,20 +8,27 @@
 </head>
 <body>
   <header>
-    <h1>Assignment Editor</h1>
+    <h2>Assignment Editor</h2>
   </header>
 
-  <section id="toolbar">
-    <button data-command="bold"><b>B</b></button>
-    <button data-command="italic"><i>I</i></button>
-    <button data-command="underline"><u>U</u></button>
+  <!-- Ribbon bar -->
+  <nav id="ribbon">
+    <button id="home-tab">Home</button>
+  </nav>
 
-    <select id="heading-select">
-      <option value="">Normal</option>
-      <option value="h1">Heading 1</option>
-      <option value="h2">Heading 2</option>
-      <option value="h3">Heading 3</option>
-    </select>
+  <section id="toolbar">
+    <div id="home-panel" class="panel hidden">
+      <button data-command="bold"><b>B</b></button>
+      <button data-command="italic"><i>I</i></button>
+      <button data-command="underline"><u>U</u></button>
+
+      <select id="heading-select">
+        <option value="">Normal</option>
+        <option value="h1">Heading 1</option>
+        <option value="h2">Heading 2</option>
+        <option value="h3">Heading 3</option>
+      </select>
+    </div>
   </section>
 
   <main>
@@ -31,4 +38,6 @@
   <script src="script.js"></script>
 </body>
 </html>
+
+
 
