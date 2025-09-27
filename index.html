@@ -11,10 +11,24 @@
     <h1>Assignment Editor</h1>
   </header>
 
+  <section id="toolbar">
+    <button data-command="bold"><b>B</b></button>
+    <button data-command="italic"><i>I</i></button>
+    <button data-command="underline"><u>U</u></button>
+
+    <select id="heading-select">
+      <option value="">Normal</option>
+      <option value="h1">Heading 1</option>
+      <option value="h2">Heading 2</option>
+      <option value="h3">Heading 3</option>
+    </select>
+  </section>
+
   <main>
-    <div id="editor" contenteditable="true" ></div>
+    <div id="editor" contenteditable="true" placeholder="Start writing here..."></div>
   </main>
 
   <script src="script.js"></script>
 </body>
 </html>
+
