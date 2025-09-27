@@ -8,6 +8,9 @@ class AssignmentEditor {
     this.fontSizeSelect = document.getElementById('font-size-select');
     this.fontFamilySelect = document.getElementById('font-family-select');
     this.currentFontSize = ""; 
+    this.alignmentSelect = document.getElementById('alignment-select');
+    this.currentAlignment = "left";
+    if (this.alignmentSelect) this.alignmentSelect.value = this.currentAlignment;
     this.init();
   }
 
@@ -59,6 +62,22 @@ if (this.fontFamilySelect) {
   });
 }
 
+ if (this.alignmentSelect) {
+      this.alignmentSelect.addEventListener('change', e => {
+        const val = e.target.value;
+        const cmdMap = {
+          left: 'justifyLeft',
+          center: 'justifyCenter',
+          right: 'justifyRight',
+          justify: 'justifyFull'
+        };
+        document.execCommand(cmdMap[val], false, null);
+        this.editor.focus();
+        this.currentAlignment = val;
+        this.updateButtonState();
+      });
+    }
+
     this.editor.addEventListener('keyup', () => this.updateButtonState());
     this.editor.addEventListener('mouseup', () => this.updateButtonState());
     this.editor.addEventListener('focus', () => this.updateButtonState());
@@ -102,8 +121,15 @@ if (this.headingSelect) {
   if (this.fontFamilySelect) {
   this.fontFamilySelect.value = this.currentFontFamily || "";
 }
+
+    if (this.alignmentSelect) this.alignmentSelect.value = this.currentAlignment;
+
   }
 }
 document.addEventListener('DOMContentLoaded', () => {
-  new AssignmentEditor('editor');
+  const editor = new AssignmentEditor('editor');
+  if (editor.alignmentSelect) {
+    editor.alignmentSelect.value = editor.currentAlignment || "left";
+  }
 });
+
