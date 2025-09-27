@@ -7,8 +7,8 @@ body {
 }
 
 header {
-  background: #444;
-  color: #fff;
+  background: #fff;
+  color: black;
   padding: 8px 15px;
 }
 
@@ -73,3 +73,64 @@ header h2 {
   cursor: pointer;
   vertical-align: middle;
 }
+
+#structure-panel {
+  display: flex;
+  gap: 8px;
+  padding: 5px;
+}
+
+#structure-panel.hidden {
+  display: none;
+}
+
+#structure-panel button {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+#editor {
+  min-height: 400px;
+  margin: 20px;
+  padding: 15px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  white-space: pre-wrap;
+}
+
+#editor ul {
+  margin: 0 0 1em 2em;
+  padding: 0;
+  list-style-position: inside;
+  list-style-type: disc;  
+}
+
+#editor ol {
+  margin: 0 0 1em 2em;
+  padding: 0;
+  list-style-position: inside;
+  list-style-type: decimal; 
+}
+
+#editor li {
+  margin: 0.2em 0;
+}
+
+button.special-action {
+  background: #ddd;
+  border-bottom: 1px solid #aaa;
+  color: black;
+  font-weight: bold;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button.special-action.active {
+  background-color: #0078d4;
+  transform: scale(1.05);
+}
+
+
