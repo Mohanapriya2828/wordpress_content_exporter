@@ -16,6 +16,8 @@ class AssignmentEditor {
     this.structureTab = document.getElementById('structure-tab');
     this.structurePanel = document.getElementById('structure-panel');
     this.structureButtons = Array.from(document.querySelectorAll('#structure-panel button[data-command]'));
+    this.insertTab = document.getElementById('insert-tab');
+    this.insertPanel = document.getElementById('insert-panel');
     this.init();
   }
 
@@ -122,6 +124,15 @@ if (ulBtn && olBtn) {
     this.updateButtonState();
   });
 }
+
+const linkBtn = document.getElementById('insert-link');
+if (linkBtn) linkBtn.addEventListener('click', () => {
+  const url = prompt("Enter URL:");
+  if (url) document.execCommand('createLink', false, url);
+  this.editor.focus();
+});
+
+
 this.structureButtons.forEach(btn => {
   if (btn.id === "ulBtn" || btn.id === "olBtn") return;
   btn.type = 'button';
@@ -132,7 +143,7 @@ this.structureButtons.forEach(btn => {
     this.editor.focus();
   });
 });
-
+    this.insertTab.addEventListener('click', () => this.togglePanel(this.insertPanel, this.insertTab));
     this.homeTab.addEventListener('click', () => this.togglePanel(this.homePanel, this.homeTab));
     this.structureTab.addEventListener('click', () => this.togglePanel(this.structurePanel, this.structureTab));
     this.editor.addEventListener('keyup', () => this.updateButtonState());
@@ -140,8 +151,8 @@ this.structureButtons.forEach(btn => {
     this.editor.addEventListener('focus', () => this.updateButtonState());
 }
 togglePanel(panel, tab) {
-    const allPanels = [this.homePanel, this.structurePanel];
-    const allTabs = [this.homeTab, this.structureTab];
+    const allPanels = [this.homePanel, this.structurePanel, this.insertPanel];
+    const allTabs = [this.homeTab, this.structureTab, this.insertTab];
     const isHidden = panel.classList.contains('hidden');
     allPanels.forEach(p => p.classList.add('hidden'));
     allTabs.forEach(t => t.setAttribute('aria-expanded', 'false'));
