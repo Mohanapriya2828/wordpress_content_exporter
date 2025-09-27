@@ -13,12 +13,14 @@ class AssignmentEditor {
     if (this.alignmentSelect) this.alignmentSelect.value = this.currentAlignment;
     this.textColorPicker = document.getElementById('text-color-picker');
     this.highlightSelect = document.getElementById('highlight-select'); 
+    this.structureTab = document.getElementById('structure-tab');
+    this.structurePanel = document.getElementById('structure-panel');
+    this.structureButtons = Array.from(document.querySelectorAll('#structure-panel button[data-command]'));
     this.init();
   }
 
 init() 
 {
-    this.homeTab.addEventListener('click', () => this.toggleHomePanel());
     this.formatButtons.forEach(btn => {
       btn.type = 'button';
       btn.addEventListener('mousedown', e => {
@@ -102,18 +104,54 @@ if (this.highlightSelect) {
     this.updateButtonState();
   });
 }
+const ulBtn = document.getElementById("ulBtn");
+const olBtn = document.getElementById("olBtn");
 
+if (ulBtn && olBtn) {
+  ulBtn.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    this.editor.focus();
+    document.execCommand("insertUnorderedList", false, null);
+    this.updateButtonState();
+  });
+
+  olBtn.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    this.editor.focus();
+    document.execCommand("insertOrderedList", false, null);
+    this.updateButtonState();
+  });
+}
+this.structureButtons.forEach(btn => {
+  if (btn.id === "ulBtn" || btn.id === "olBtn") return;
+  btn.type = 'button';
+  btn.addEventListener('mousedown', e => {
+    e.preventDefault();
+    const cmd = btn.dataset.command;
+    document.execCommand(cmd, false, null);
+    this.editor.focus();
+  });
+});
+
+    this.homeTab.addEventListener('click', () => this.togglePanel(this.homePanel, this.homeTab));
+    this.structureTab.addEventListener('click', () => this.togglePanel(this.structurePanel, this.structureTab));
     this.editor.addEventListener('keyup', () => this.updateButtonState());
     this.editor.addEventListener('mouseup', () => this.updateButtonState());
     this.editor.addEventListener('focus', () => this.updateButtonState());
 }
-
-toggleHomePanel() {
-    const hidden = this.homePanel.classList.toggle('hidden');
-    this.homePanel.setAttribute('aria-hidden', hidden ? 'true' : 'false');
-    this.homeTab.setAttribute('aria-expanded', hidden ? 'false' : 'true');
+togglePanel(panel, tab) {
+    const allPanels = [this.homePanel, this.structurePanel];
+    const allTabs = [this.homeTab, this.structureTab];
+    const isHidden = panel.classList.contains('hidden');
+    allPanels.forEach(p => p.classList.add('hidden'));
+    allTabs.forEach(t => t.setAttribute('aria-expanded', 'false'));
+    if (isHidden) {
+        panel.classList.remove('hidden');
+        tab.setAttribute('aria-expanded', 'true');
+    }
     setTimeout(() => this.editor.focus(), 0);
 }
+
 
 updateButtonState() {
     this.formatButtons.forEach(btn => {
@@ -157,4 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
     editor.alignmentSelect.value = editor.currentAlignment || "left";
   }
 });
+
+
 

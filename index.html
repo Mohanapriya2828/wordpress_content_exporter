@@ -8,11 +8,13 @@
 </head>
 <body>
   <header>
-    <h2>Assignment Editor</h2>
+    <h2>Wordpad Editor</h2>
   </header>
 
   <nav id="ribbon">
     <button id="home-tab">Home</button>
+    <button id="structure-tab">Structure</button>
+
   </nav>
 
   <section id="toolbar">
@@ -67,11 +69,16 @@
   <option value="#ff00ff">Magenta</option>
   <option value="#ff9900">Orange</option>
 </select>
-
-
     </div>
-  </section>
 
+<div id="structure-panel" class="panel hidden">
+    <button id="ulBtn">Bulleted List</button>
+    <button id="olBtn">Numbered List</button>
+    <button data-command="indent">Increase Indent</button>
+    <button data-command="outdent">Decrease Indent</button>
+</div>
+
+  </section>
   <main>
     <div id="editor" contenteditable="true" placeholder="Start writing here..."></div>
   </main>
