@@ -22,6 +22,8 @@ class AssignmentEditor {
     this.operations_panel = document.getElementById('operations-panel');
     this.clear_format_btn = document.getElementById('clear-format');
     this.reset_btn = document.getElementById('reset-editor');
+    this.copy_plain_btn = document.getElementById('copy-plain');
+    this.preview_btn = document.getElementById('preview');
     this.init();
   }
 
@@ -181,6 +183,34 @@ this.clear_format_btn.addEventListener('click', () => {
 this.reset_btn.addEventListener('click', () => {
   this.editor.innerHTML = '';
 });
+this.copy_plain_btn.addEventListener('click', () => {
+  const temp = document.createElement('textarea');
+  temp.value = this.editor.textContent;
+  document.body.appendChild(temp);
+  temp.select();
+  document.execCommand('copy');
+  document.body.removeChild(temp);
+  this.copy_plain_btn.classList.add('clicked');
+  setTimeout(() => this.copy_plain_btn.classList.remove('clicked'), 500);
+});
+
+this.preview_btn.addEventListener('click', () => {
+  const win = window.open('', '_blank', 'width=800,height=600');
+  win.document.write('<html><head><title>preview</title></head><body>');
+  win.document.write(this.editor.innerHTML);
+  win.document.write('</body></html>');
+  win.document.close();
+});
+
+[this.clear_format_btn, this.reset_btn,this.copy_plain_btn,this.preview_btn].forEach(btn => {
+  if (btn) {
+    btn.classList.add("special-action");
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("active");
+    });
+  }
+});
+
 
     this.insertTab.addEventListener('click', () => this.togglePanel(this.insertPanel, this.insertTab));
     this.homeTab.addEventListener('click', () => this.togglePanel(this.homePanel, this.homeTab));
@@ -189,6 +219,7 @@ this.reset_btn.addEventListener('click', () => {
     this.editor.addEventListener('mouseup', () => this.updateButtonState());
     this.editor.addEventListener('focus', () => this.updateButtonState());
 }
+
 togglePanel(panel, tab) {
     const allPanels = [this.homePanel, this.structurePanel, this.insertPanel,this.operations_panel];
     const allTabs = [this.homeTab, this.structureTab, this.insertTab,this.operations_tab];
