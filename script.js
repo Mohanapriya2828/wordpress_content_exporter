@@ -11,6 +11,8 @@ class AssignmentEditor {
     this.alignmentSelect = document.getElementById('alignment-select');
     this.currentAlignment = "left";
     if (this.alignmentSelect) this.alignmentSelect.value = this.currentAlignment;
+    this.textColorPicker = document.getElementById('text-color-picker');
+    this.highlightSelect = document.getElementById('highlight-select'); 
     this.init();
   }
 
@@ -77,6 +79,29 @@ if (this.fontFamilySelect) {
         this.updateButtonState();
       });
     }
+
+
+    if (this.textColorPicker) {
+  this.textColorPicker.addEventListener('change', e => {
+    const color = e.target.value;
+    document.execCommand('foreColor', false, color);
+    this.editor.focus();
+    this.updateButtonState();
+  });
+}
+
+if (this.highlightSelect) {
+  this.highlightSelect.addEventListener('change', e => {
+    const color = e.target.value || 'transparent';
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+
+    document.execCommand('styleWithCSS', false, true);
+    document.execCommand('hiliteColor', false, color);
+    this.editor.focus();
+    this.updateButtonState();
+  });
+}
 
     this.editor.addEventListener('keyup', () => this.updateButtonState());
     this.editor.addEventListener('mouseup', () => this.updateButtonState());

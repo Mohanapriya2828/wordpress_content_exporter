@@ -50,6 +50,11 @@ header h2 {
   padding: 5px 10px;
   font-size: 14px;
 }
+#toolbar button[aria-pressed="true"] {
+  background: #0078d4;
+  color: white;
+  border-color: #005a9e;
+}
 
 #editor {
   min-height: 400px;
@@ -58,4 +63,13 @@ header h2 {
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+#home-panel input[type="color"] {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  vertical-align: middle;
 }
