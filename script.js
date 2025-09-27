@@ -28,6 +28,7 @@ init()
       this.headingSelect.addEventListener('change', e => {
         const val = e.target.value || 'p';
         document.execCommand('formatBlock', false, val);
+        this.currentFontSize = "";
         this.editor.focus();
         this.updateButtonState();
       });
@@ -69,8 +70,8 @@ updateButtonState() {
     });
 
     if (this.fontSizeSelect) {
-      this.fontSizeSelect.value = this.currentFontSize || "";
-    }
+    this.fontSizeSelect.value = this.currentFontSize || "";
+}
   }
 }
 
