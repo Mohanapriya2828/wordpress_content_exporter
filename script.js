@@ -6,72 +6,74 @@ class AssignmentEditor {
     this.formatButtons = Array.from(document.querySelectorAll('#toolbar button[data-command]'));
     this.headingSelect = document.getElementById('heading-select');
     this.fontSizeSelect = document.getElementById('font-size-select');
-
+    this.currentFontSize = ""; 
     this.init();
   }
 
-  init() {
+init() 
+{
     this.homeTab.addEventListener('click', () => this.toggleHomePanel());
+
     this.formatButtons.forEach(btn => {
       btn.type = 'button';
-      btn.addEventListener('mousedown', (e) => {
+      btn.addEventListener('mousedown', e => {
         e.preventDefault();
-        const cmd = btn.getAttribute('data-command');
-        document.execCommand(cmd, false, null);
+        document.execCommand(btn.dataset.command, false, null);
         this.editor.focus();
         this.updateButtonState();
       });
     });
+
     if (this.headingSelect) {
-      this.headingSelect.addEventListener('change', (e) => {
+      this.headingSelect.addEventListener('change', e => {
         const val = e.target.value || 'p';
         document.execCommand('formatBlock', false, val);
         this.editor.focus();
         this.updateButtonState();
       });
-     
-      this.headingSelect.addEventListener('mousedown', (e) => {
+    }
 
+    if (this.fontSizeSelect) {
+      this.fontSizeSelect.addEventListener('change', e => {
+        const val = e.target.value;
+        if (val) {
+          document.execCommand('fontSize', false, val);
+          this.currentFontSize = val;
+        }
+        this.editor.focus();
+        this.updateButtonState();
       });
     }
-    if (this.fontSizeSelect) {
-    this.fontSizeSelect.addEventListener('change', (e) => {
-    this.editor.focus();             
-    const val = e.target.value;
-    if (val) document.execCommand('fontSize', false, val);  
-    e.target.value = "";              
-  });
-}
-
 
     this.editor.addEventListener('keyup', () => this.updateButtonState());
     this.editor.addEventListener('mouseup', () => this.updateButtonState());
     this.editor.addEventListener('focus', () => this.updateButtonState());
-  }
+}
 
-  toggleHomePanel() {
+toggleHomePanel() {
     const hidden = this.homePanel.classList.toggle('hidden');
     this.homePanel.setAttribute('aria-hidden', hidden ? 'true' : 'false');
     this.homeTab.setAttribute('aria-expanded', hidden ? 'false' : 'true');
     setTimeout(() => this.editor.focus(), 0);
-  }
+}
 
-  updateButtonState() {
+updateButtonState() {
     this.formatButtons.forEach(btn => {
       const cmd = btn.getAttribute('data-command');
       try {
         const active = document.queryCommandState(cmd);
         btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-      } catch (err) {
+      } catch {
         btn.removeAttribute('aria-pressed');
       }
     });
+
+    if (this.fontSizeSelect) {
+      this.fontSizeSelect.value = this.currentFontSize || "";
+    }
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   new AssignmentEditor('editor');
 });
-
-
-
