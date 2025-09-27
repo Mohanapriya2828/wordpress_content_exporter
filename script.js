@@ -6,6 +6,7 @@ class AssignmentEditor {
     this.formatButtons = Array.from(document.querySelectorAll('#toolbar button[data-command]'));
     this.headingSelect = document.getElementById('heading-select');
     this.fontSizeSelect = document.getElementById('font-size-select');
+    this.fontFamilySelect = document.getElementById('font-family-select');
     this.currentFontSize = ""; 
     this.init();
   }
@@ -44,6 +45,19 @@ init()
         this.updateButtonState();
       });
     }
+if (this.fontFamilySelect) {
+    this.fontFamilySelect.addEventListener('change', e => {
+    const val = e.target.value;
+    if (val) {
+      document.execCommand('fontName', false, val);
+      this.currentFontFamily = val;
+    } else {
+      this.currentFontFamily = "";
+    }
+    this.editor.focus();
+    this.updateButtonState();
+  });
+}
 
     this.editor.addEventListener('keyup', () => this.updateButtonState());
     this.editor.addEventListener('mouseup', () => this.updateButtonState());
@@ -84,6 +98,10 @@ if (this.headingSelect) {
       }
     }
   }
+
+  if (this.fontFamilySelect) {
+  this.fontFamilySelect.value = this.currentFontFamily || "";
+}
   }
 }
 document.addEventListener('DOMContentLoaded', () => {
