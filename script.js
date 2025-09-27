@@ -5,6 +5,7 @@ class AssignmentEditor {
     this.homePanel = document.getElementById('home-panel');
     this.formatButtons = Array.from(document.querySelectorAll('#toolbar button[data-command]'));
     this.headingSelect = document.getElementById('heading-select');
+    this.fontSizeSelect = document.getElementById('font-size-select');
 
     this.init();
   }
@@ -33,6 +34,15 @@ class AssignmentEditor {
 
       });
     }
+    if (this.fontSizeSelect) {
+    this.fontSizeSelect.addEventListener('change', (e) => {
+    this.editor.focus();             
+    const val = e.target.value;
+    if (val) document.execCommand('fontSize', false, val);  
+    e.target.value = "";              
+  });
+}
+
 
     this.editor.addEventListener('keyup', () => this.updateButtonState());
     this.editor.addEventListener('mouseup', () => this.updateButtonState());
