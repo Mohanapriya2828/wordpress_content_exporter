@@ -28,6 +28,8 @@ class AssignmentEditor {
     this.exportPanel = document.getElementById('export-panel');
     this.exportWordBtn = document.getElementById('export-word-btn');
     this.exportPdfBtn = document.getElementById('export-pdf-btn');
+    this.documentTitle = "Wordpad Document";
+    this.documentAuthor = "Priya Jayabalan";
     this.init();
   }
 
@@ -224,10 +226,17 @@ if (this.exportTab && this.exportPanel) {
 if (this.exportWordBtn) {
   this.exportWordBtn.addEventListener('click', () => {
     const content = this.editor.innerHTML;
-    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
-                   "xmlns:w='urn:schemas-microsoft-com:office:word' " +
-                   "xmlns='http://www.w3.org/TR/REC-html40'>" +
-                   "<head><meta charset='utf-8'><title>Export</title></head><body>";
+    const header = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+            xmlns:w='urn:schemas-microsoft-com:office:word' 
+            xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>${this.documentTitle}</title>
+        <meta name="author" content="${this.documentAuthor}">
+      </head>
+      <body>
+    `;
     const footer = "</body></html>";
     const blob = new Blob([header + content + footer], {
       type: "application/msword"
@@ -235,7 +244,7 @@ if (this.exportWordBtn) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "document.doc";
+    link.download = `${this.documentTitle}.doc`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -243,21 +252,24 @@ if (this.exportWordBtn) {
   });
 }
 
-const exportPdfBtn = document.getElementById('export-pdf-btn');
-if (exportPdfBtn) {
-  exportPdfBtn.addEventListener('click', () => {
-    html2pdf().from(this.editor).set({
+if (this.exportPdfBtn) {
+  this.exportPdfBtn.addEventListener('click', () => {
+    const opt = {
       margin: 10,
-      filename: 'document.pdf',
+      filename: `${this.documentTitle}.pdf`,
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).save();
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
+    };
+    html2pdf().set(opt).from(this.editor).toPdf().get('pdf').then(function (pdf) {
+      pdf.setProperties({
+        title: this.documentTitle,
+        author: this.documentAuthor
+      });
+    }.bind(this)).save();
     this.exportPanel.classList.add('hidden');
   });
 }
-
-
-
     this.insertTab.addEventListener('click', () => this.togglePanel(this.insertPanel, this.insertTab));
     this.homeTab.addEventListener('click', () => this.togglePanel(this.homePanel, this.homeTab));
     this.structureTab.addEventListener('click', () => this.togglePanel(this.structurePanel, this.structureTab));
