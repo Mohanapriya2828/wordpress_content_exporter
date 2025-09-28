@@ -27,6 +27,7 @@ class AssignmentEditor {
     this.exportTab = document.getElementById('export-tab');
     this.exportPanel = document.getElementById('export-panel');
     this.exportWordBtn = document.getElementById('export-word-btn');
+    this.exportPdfBtn = document.getElementById('export-pdf-btn');
     this.init();
   }
 
@@ -241,6 +242,22 @@ if (this.exportWordBtn) {
     URL.revokeObjectURL(url);
   });
 }
+
+const exportPdfBtn = document.getElementById('export-pdf-btn');
+if (exportPdfBtn) {
+  exportPdfBtn.addEventListener('click', () => {
+    html2pdf().from(this.editor).set({
+      margin: 10,
+      filename: 'document.pdf',
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).save();
+    this.exportPanel.classList.add('hidden');
+  });
+}
+
+
+
     this.insertTab.addEventListener('click', () => this.togglePanel(this.insertPanel, this.insertTab));
     this.homeTab.addEventListener('click', () => this.togglePanel(this.homePanel, this.homeTab));
     this.structureTab.addEventListener('click', () => this.togglePanel(this.structurePanel, this.structureTab));
