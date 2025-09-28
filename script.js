@@ -32,6 +32,20 @@ class AssignmentEditor {
     this.documentAuthor = "Priya Jayabalan";
     this.findReplaceTab = document.getElementById('findreplace-tab');
     this.findReplacePanel = document.getElementById('findreplace-panel');
+    this.modeTab = document.getElementById('mode-tab');
+    this.modePanel = document.getElementById('mode-panel');
+    this.lightModeBtn = document.getElementById('light-mode-btn');
+    this.darkModeBtn = document.getElementById('dark-mode-btn');
+    this.autosaveTab = document.getElementById("autosave-tab");
+    this.autosavePanel = document.getElementById("autosave-panel");
+    this.autosaveToggle = document.getElementById("autosave-toggle");
+    this.autosaveEnabled = false;
+
+const savedContent = localStorage.getItem("editorContent");
+if (savedContent) {
+  this.editor.innerHTML = savedContent;
+}
+
     this.init();
   }
 
@@ -356,11 +370,53 @@ this.nextMatch = () => {
   this.editor.focus();
 };
 
+if (this.modeTab && this.modePanel) {
+  this.modeTab.addEventListener('click', () => 
+    this.togglePanel(this.modePanel, this.modeTab)
+  );
+}
+
+if (this.lightModeBtn) {
+  this.lightModeBtn.addEventListener('click', () => {
+    document.body.classList.add('light-mode');
+    document.body.classList.remove('dark-mode');
+  });
+}
+
+if (this.darkModeBtn) {
+  this.darkModeBtn.addEventListener('click', () => {
+    document.body.classList.add('dark-mode');
+    document.body.classList.remove('light-mode');
+  });
+}
+
+if (this.autosaveTab && this.autosavePanel) {
+  this.autosaveTab.addEventListener("click", () => {
+    document.querySelectorAll(".panel").forEach(p => p.classList.add("hidden"));
+    this.autosavePanel.classList.remove("hidden");
+  });
+}
+
+if (this.autosaveToggle) {
+  this.autosaveToggle.addEventListener("click", () => {
+    this.autosaveEnabled = !this.autosaveEnabled;
+    this.autosaveToggle.textContent = `Auto-Save: ${this.autosaveEnabled ? "ON" : "OFF"}`;
+  });
+}
+
+this.editor.addEventListener("input", () => {
+  if (this.autosaveEnabled) {
+    localStorage.setItem("editorContent", this.editor.innerHTML);
+  }
+});
+
+
+
 }
 
 togglePanel(panel, tab) {
-    const allPanels = [this.homePanel, this.structurePanel, this.insertPanel,this.operations_panel,this.exportPanel,this.findReplacePanel];
-    const allTabs = [this.homeTab, this.structureTab, this.insertTab,this.operations_tab,this.exportTab,this.findReplaceTab];
+    const allPanels = [this.homePanel, this.structurePanel, this.insertPanel,this.operations_panel,this.exportPanel,this.findReplacePanel,this.modePanel,this.autosavePanel];
+    const allTabs = [this.homeTab, this.structureTab, this.insertTab,this.operations_tab,this.exportTab,this.findReplaceTab,this.modeTab,this.autosaveTab];
     const isHidden = panel.classList.contains('hidden');
     allPanels.forEach(p => p.classList.add('hidden'));
     allTabs.forEach(t => t.setAttribute('aria-expanded', 'false'));
