@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -16,6 +16,8 @@
     <button id="structure-tab">Structure</button>
     <button id="insert-tab">Insert</button>
     <button id="operations-tab">operations</button>
+    <button id="export-tab">Export</button>
+
   </nav>
 
   <section id="toolbar">
@@ -91,14 +93,15 @@
   <button id="preview">preview</button>
 </div>
 
+ <div id="export-panel" class="panel hidden">
+    <button id="export-word-btn">Export as Word</button>
+  </div>
+
   </section>
   <main>
     <div id="editor" contenteditable="true" placeholder="Start writing here..."></div>
   </main>
-
-  <script src="script.js"></script>
+  <script src="script.js"></script> 
 </body>
-</html>
-
-
+</html> 
 

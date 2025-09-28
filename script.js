@@ -24,6 +24,9 @@ class AssignmentEditor {
     this.reset_btn = document.getElementById('reset-editor');
     this.copy_plain_btn = document.getElementById('copy-plain');
     this.preview_btn = document.getElementById('preview');
+    this.exportTab = document.getElementById('export-tab');
+    this.exportPanel = document.getElementById('export-panel');
+    this.exportWordBtn = document.getElementById('export-word-btn');
     this.init();
   }
 
@@ -211,7 +214,33 @@ this.preview_btn.addEventListener('click', () => {
   }
 });
 
+if (this.exportTab && this.exportPanel) {
+  this.exportTab.addEventListener('click', () => {
+    this.togglePanel(this.exportPanel, this.exportTab);
+  });
+}
 
+if (this.exportWordBtn) {
+  this.exportWordBtn.addEventListener('click', () => {
+    const content = this.editor.innerHTML;
+    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                   "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+                   "xmlns='http://www.w3.org/TR/REC-html40'>" +
+                   "<head><meta charset='utf-8'><title>Export</title></head><body>";
+    const footer = "</body></html>";
+    const blob = new Blob([header + content + footer], {
+      type: "application/msword"
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "document.doc";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  });
+}
     this.insertTab.addEventListener('click', () => this.togglePanel(this.insertPanel, this.insertTab));
     this.homeTab.addEventListener('click', () => this.togglePanel(this.homePanel, this.homeTab));
     this.structureTab.addEventListener('click', () => this.togglePanel(this.structurePanel, this.structureTab));
@@ -221,8 +250,8 @@ this.preview_btn.addEventListener('click', () => {
 }
 
 togglePanel(panel, tab) {
-    const allPanels = [this.homePanel, this.structurePanel, this.insertPanel,this.operations_panel];
-    const allTabs = [this.homeTab, this.structureTab, this.insertTab,this.operations_tab];
+    const allPanels = [this.homePanel, this.structurePanel, this.insertPanel,this.operations_panel,this.exportPanel];
+    const allTabs = [this.homeTab, this.structureTab, this.insertTab,this.operations_tab,this.exportTab];
     const isHidden = panel.classList.contains('hidden');
     allPanels.forEach(p => p.classList.add('hidden'));
     allTabs.forEach(t => t.setAttribute('aria-expanded', 'false'));
@@ -276,6 +305,4 @@ document.addEventListener('DOMContentLoaded', () => {
     editor.alignmentSelect.value = editor.currentAlignment || "left";
   }
 });
-
-
 
