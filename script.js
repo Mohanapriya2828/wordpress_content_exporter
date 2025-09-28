@@ -30,6 +30,8 @@ class AssignmentEditor {
     this.exportPdfBtn = document.getElementById('export-pdf-btn');
     this.documentTitle = "Wordpad Document";
     this.documentAuthor = "Priya Jayabalan";
+    this.findReplaceTab = document.getElementById('findreplace-tab');
+    this.findReplacePanel = document.getElementById('findreplace-panel');
     this.init();
   }
 
@@ -270,17 +272,95 @@ if (this.exportPdfBtn) {
     this.exportPanel.classList.add('hidden');
   });
 }
+
+if(this.findReplaceTab && this.findReplacePanel) {
+  this.findReplaceTab.addEventListener('click', () => this.togglePanel(this.findReplacePanel, this.findReplaceTab));
+}
+
     this.insertTab.addEventListener('click', () => this.togglePanel(this.insertPanel, this.insertTab));
     this.homeTab.addEventListener('click', () => this.togglePanel(this.homePanel, this.homeTab));
     this.structureTab.addEventListener('click', () => this.togglePanel(this.structurePanel, this.structureTab));
     this.editor.addEventListener('keyup', () => this.updateButtonState());
     this.editor.addEventListener('mouseup', () => this.updateButtonState());
     this.editor.addEventListener('focus', () => this.updateButtonState());
+
+this.matches = [];
+this.currentFindIndex = -1;
+this.lastTerm = '';
+
+const findInput = document.getElementById('find-input');
+const replaceInput = document.getElementById('replace-input-box');
+const findNextBtn = document.getElementById('find-next-btn');
+const replaceBtn = document.getElementById('replace-btn');
+const replaceAllBtn = document.getElementById('replace-all-btn');
+
+if (findNextBtn) {
+  findNextBtn.addEventListener('click', () => {
+    const term = findInput.value.trim();
+    if (!term) return;
+    if (this.matches.length === 0 || this.lastTerm !== term) {
+      this.lastTerm = term;
+      this.matches = [];
+      this.currentFindIndex = -1;
+      const walker = document.createTreeWalker(this.editor, NodeFilter.SHOW_TEXT);
+      let node;
+      while (node = walker.nextNode()) {
+        let regex = new RegExp(term, 'gi');
+        let match;
+        while (match = regex.exec(node.textContent)) {
+          this.matches.push({ node, start: match.index, end: match.index + match[0].length });
+        }
+      }
+    }
+    this.nextMatch();
+  });
+}
+
+if (replaceBtn) {
+  replaceBtn.addEventListener('click', () => {
+    if (!this.matches.length || this.currentFindIndex === -1) return;
+    const replacement = replaceInput.value;
+    const match = this.matches[this.currentFindIndex];
+    const range = document.createRange();
+    range.setStart(match.node, match.start);
+    range.setEnd(match.node, match.end);
+    range.deleteContents();
+    range.insertNode(document.createTextNode(replacement));
+    this.editor.normalize();
+    findNextBtn.click();
+  });
+}
+
+if (replaceAllBtn) {
+  replaceAllBtn.addEventListener('click', () => {
+    const term = findInput.value.trim();
+    const replacement = replaceInput.value;
+    if (!term) return;
+    const regex = new RegExp(term, 'gi');
+    this.editor.innerHTML = this.editor.innerHTML.replace(regex, replacement);
+    this.matches = [];
+    this.currentFindIndex = -1;
+  });
+}
+
+this.nextMatch = () => {
+  if (!this.matches.length) return;
+  this.currentFindIndex = (this.currentFindIndex + 1) % this.matches.length;
+  const match = this.matches[this.currentFindIndex];
+  const range = document.createRange();
+  range.setStart(match.node, match.start);
+  range.setEnd(match.node, match.end);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  this.editor.focus();
+};
+
 }
 
 togglePanel(panel, tab) {
-    const allPanels = [this.homePanel, this.structurePanel, this.insertPanel,this.operations_panel,this.exportPanel];
-    const allTabs = [this.homeTab, this.structureTab, this.insertTab,this.operations_tab,this.exportTab];
+    const allPanels = [this.homePanel, this.structurePanel, this.insertPanel,this.operations_panel,this.exportPanel,this.findReplacePanel];
+    const allTabs = [this.homeTab, this.structureTab, this.insertTab,this.operations_tab,this.exportTab,this.findReplaceTab];
     const isHidden = panel.classList.contains('hidden');
     allPanels.forEach(p => p.classList.add('hidden'));
     allTabs.forEach(t => t.setAttribute('aria-expanded', 'false'));
@@ -327,6 +407,45 @@ if (this.headingSelect) {
     if (this.alignmentSelect) this.alignmentSelect.value = this.currentAlignment;
 
   }
+
+nextMatch() {
+  if(!this.matches || this.matches.length === 0) return;
+  this.currentFindIndex = (this.currentFindIndex + 1) % this.matches.length;
+  const match = this.matches[this.currentFindIndex];
+  const range = document.createRange();
+  range.setStart(match.node, match.start);
+  range.setEnd(match.node, match.end);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  this.editor.focus();
+}
+clearHighlights() {
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  this.matches = [];
+  this.currentFindIndex = -1;
+}
+replaceNext() {
+  if (!this.replaceMatches || this.replaceMatches.length === 0) return;
+  this.replaceCurrentIndex = (this.replaceCurrentIndex + 1) % this.replaceMatches.length;
+  const match = this.replaceMatches[this.replaceCurrentIndex];
+  const range = document.createRange();
+  range.setStart(match.node, match.start);
+  range.setEnd(match.node, match.end);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  this.editor.focus();
+}
+
+clearReplaceHighlights() {
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  this.replaceMatches = [];
+  this.replaceCurrentIndex = -1;
+}
+
 }
 document.addEventListener('DOMContentLoaded', () => {
   const editor = new AssignmentEditor('editor');
@@ -334,4 +453,10 @@ document.addEventListener('DOMContentLoaded', () => {
     editor.alignmentSelect.value = editor.currentAlignment || "left";
   }
 });
+
+
+
+
+
+
 

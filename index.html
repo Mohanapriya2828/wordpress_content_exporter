@@ -18,7 +18,7 @@
     <button id="insert-tab">Insert</button>
     <button id="operations-tab">operations</button>
     <button id="export-tab">Export</button>
-
+    <button id="findreplace-tab">Find & Replace</button>
   </nav>
 
   <section id="toolbar">
@@ -98,11 +98,20 @@
     <button id="export-word-btn">Export as Word</button>
     <button id="export-pdf-btn">Export as PDF</button>
   </div>
-
+<div id="findreplace-panel" class="panel hidden">
+  <input type="text" id="find-input" placeholder="Find">
+  <input type="text" id="replace-input-box" placeholder="Replace">
+  <button id="find-next-btn">Find Next</button>
+  <button id="replace-btn">Replace</button>
+  <button id="replace-all-btn">Replace All</button>
+</div>
   </section>
   <main>
-    <div id="editor" contenteditable="true" placeholder="Start writing here..."></div>
+    <div id="editor" contenteditable="true" ></div>
   </main>
+  
+
+</div>
   <script src="script.js"></script> 
 </body>
 </html> 
