@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
   margin: 0;
@@ -11,6 +15,11 @@ header {
   color: #fff;
   padding: 12px 20px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 1000;
 }
 
 header h2 {
@@ -25,6 +34,11 @@ header h2 {
   padding: 8px 10px;
   display: flex;
   gap: 5px;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 100vw;
+  z-index: 900;
 }
 
 #ribbon button {
@@ -57,6 +71,12 @@ header h2 {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  position: fixed;
+  top: 100px;
+  left: 0;
+  width: 100vw;
+  z-index: 800;
+  margin-top: 10px;
 }
 
 .panel {
@@ -96,7 +116,7 @@ header h2 {
 
 #editor {
   min-height: 500px;
-  margin: 20px;
+  margin: 168px;
   padding: 20px;
   background: #fff;
   border: 1px solid #ccc;
