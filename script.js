@@ -575,23 +575,44 @@ if (this.exportWordBtn) {
 }
 
 if (this.exportPdfBtn) {
-  this.exportPdfBtn.addEventListener('click', () => {
+  this.exportPdfBtn.addEventListener('click', async () => {
+    const clone = this.editor.cloneNode(true);
+
+    clone.querySelectorAll('div').forEach(el => {
+      const cursor = el.style.cursor;
+      if (cursor === 'move' || cursor === 'se-resize') el.remove();
+    });
+
+    clone.querySelectorAll('img').forEach(img => {
+      img.style.position = 'static';
+      img.style.top = '';
+      img.style.left = '';
+      img.style.width = img.offsetWidth + 'px';
+      img.style.height = 'auto';
+      img.crossOrigin = 'anonymous';
+    });
+
+    clone.querySelectorAll('table').forEach(tbl => {
+      tbl.style.position = 'static';
+      tbl.style.top = '';
+      tbl.style.left = '';
+      tbl.style.width = '100%';
+      tbl.style.tableLayout = 'fixed';
+    });
+
     const opt = {
       margin: 10,
       filename: `${this.documentTitle}.pdf`,
-      html2canvas: { scale: 2 },
+      html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['css', 'legacy'] }
     };
-    html2pdf().set(opt).from(this.editor).toPdf().get('pdf').then(function (pdf) {
-      pdf.setProperties({
-        title: this.documentTitle,
-        author: this.documentAuthor
-      });
-    }.bind(this)).save();
+
+    await html2pdf().set(opt).from(clone).save();
     this.exportPanel.classList.add('hidden');
   });
 }
+
 
 if(this.findReplaceTab && this.findReplacePanel) {
   this.findReplaceTab.addEventListener('click', () => this.togglePanel(this.findReplacePanel, this.findReplaceTab));
