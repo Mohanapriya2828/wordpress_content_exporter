@@ -259,6 +259,137 @@ if (imagebtn) imagebtn.addEventListener('click', () => {
     document.removeEventListener('mouseup', resizeend);
   }
 });
+
+const tablebtn = document.getElementById('insert-table');
+if (tablebtn) tablebtn.addEventListener('click', () => {
+  const rows = parseInt(prompt("number of rows:", 2)) || 2;
+  const cols = parseInt(prompt("number of columns:", 2)) || 2;
+  const editor = document.querySelector('#editor');
+
+  const table = document.createElement('table');
+  table.style.position = 'absolute';
+  table.style.top = '50px';
+  table.style.left = '50px';
+  table.style.borderCollapse = 'collapse';
+  table.style.border = '1px solid #000';
+  table.style.minWidth = '50px';
+  table.style.minHeight = '30px';
+  table.style.tableLayout = 'fixed';
+  table.style.maxWidth = (editor.clientWidth - 20) + 'px';
+
+  for (let r = 0; r < rows; r++) {
+    const tr = document.createElement('tr');
+    for (let c = 0; c < cols; c++) {
+      const td = document.createElement('td');
+      td.style.border = '1px solid #000';
+      td.style.padding = '5px';
+      td.style.wordBreak = 'break-word';
+      td.style.overflowWrap = 'break-word';
+      td.style.maxWidth = '200px';
+      td.contentEditable = 'true';
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+
+  editor.appendChild(table);
+
+  const draghandle = document.createElement('div');
+  draghandle.style.position = 'absolute';
+  draghandle.style.width = '16px';
+  draghandle.style.height = '16px';
+  draghandle.style.background = 'red';
+  draghandle.style.cursor = 'move';
+  draghandle.style.top = (parseInt(table.style.top) - 20) + 'px';
+  draghandle.style.left = table.style.left;
+  editor.appendChild(draghandle);
+
+  let isdragging = false, startx, starty, startleft, starttop;
+  draghandle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    isdragging = true;
+    startx = e.clientX;
+    starty = e.clientY;
+    startleft = parseInt(table.style.left);
+    starttop = parseInt(table.style.top);
+    document.addEventListener('mousemove', dragmove);
+    document.addEventListener('mouseup', dragend);
+  });
+
+  function dragmove(e) {
+    if (!isdragging) return;
+    let dx = e.clientX - startx;
+    let dy = e.clientY - starty;
+    let newleft = startleft + dx;
+    let newtop = starttop + dy;
+    if (newleft < 0) newleft = 0;
+    if (newtop < 0) newtop = 0;
+    if (newleft + table.offsetWidth > editor.clientWidth) newleft = editor.clientWidth - table.offsetWidth;
+    if (newtop + table.offsetHeight > editor.clientHeight) newtop = editor.clientHeight - table.offsetHeight;
+    table.style.left = newleft + 'px';
+    table.style.top = newtop + 'px';
+    draghandle.style.left = newleft + 'px';
+    draghandle.style.top = (newtop - 20) + 'px';
+    updateresizehandle();
+  }
+
+  function dragend() {
+    isdragging = false;
+    document.removeEventListener('mousemove', dragmove);
+    document.removeEventListener('mouseup', dragend);
+  }
+
+  const resizehandle = document.createElement('div');
+  resizehandle.style.position = 'absolute';
+  resizehandle.style.width = '12px';
+  resizehandle.style.height = '12px';
+  resizehandle.style.background = '#0078d4';
+  resizehandle.style.cursor = 'se-resize';
+  editor.appendChild(resizehandle);
+
+  function updateresizehandle() {
+    resizehandle.style.left = (parseInt(table.style.left) + table.offsetWidth - 6) + 'px';
+    resizehandle.style.top = (parseInt(table.style.top) + table.offsetHeight - 6) + 'px';
+  }
+  updateresizehandle();
+
+  let isresizing = false, startwidth, startheight;
+  resizehandle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    isresizing = true;
+    startwidth = table.offsetWidth;
+    startheight = table.offsetHeight;
+    startx = e.clientX;
+    starty = e.clientY;
+    document.addEventListener('mousemove', resizemove);
+    document.addEventListener('mouseup', resizeend);
+  });
+
+  function resizemove(e) {
+    if (!isresizing) return;
+    let dx = e.clientX - startx;
+    let dy = e.clientY - starty;
+    let newWidth = startwidth + dx;
+    let newHeight = startheight + dy;
+    if (parseInt(table.style.left) + newWidth > editor.clientWidth) newWidth = editor.clientWidth - parseInt(table.style.left);
+    if (parseInt(table.style.top) + newHeight > editor.clientHeight) newHeight = editor.clientHeight - parseInt(table.style.top);
+    if (newWidth < 50) newWidth = 50;
+    if (newHeight < 30) newHeight = 30;
+    table.style.width = newWidth + 'px';
+    table.style.height = newHeight + 'px';
+    updateresizehandle();
+  }
+
+  function resizeend() {
+    isresizing = false;
+    document.removeEventListener('mousemove', resizemove);
+    document.removeEventListener('mouseup', resizeend);
+  }
+
+  
+});
+
 this.structureButtons.forEach(btn => {
   if (btn.id === "ulBtn" || btn.id === "olBtn") return;
   btn.type = 'button';
