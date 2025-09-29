@@ -161,28 +161,104 @@ if (linkBtn) linkBtn.addEventListener('click', () => {
   this.editor.focus();
 });
 
-const imageBtn = document.getElementById('insert-image');
-if (imageBtn) imageBtn.addEventListener('click', () => {
+const imagebtn = document.getElementById('insert-image');
+if (imagebtn) imagebtn.addEventListener('click', () => {
   const url = prompt("Enter image URL:");
-  if (url) document.execCommand('insertImage', false, url);
-  this.editor.focus();
-});
+  if (!url) return;
 
-const tableBtn = document.getElementById('insert-table');
-if (tableBtn) tableBtn.addEventListener('click', () => {
-  const rows = parseInt(prompt("Rows:"), 10);
-  const cols = parseInt(prompt("Columns:"), 10);
-  if (rows > 0 && cols > 0) {
-    let table = '<table border="1">';
-    for (let r = 0; r < rows; r++) {
-      table += '<tr>';
-      for (let c = 0; c < cols; c++) table += '<td>&nbsp;</td>';
-      table += '</tr>';
-    }
-    table += '</table><br>';
-    document.execCommand('insertHTML', false, table);
+  const editor = document.querySelector('#editor');
+
+  const img = document.createElement('img');
+  img.src = url;
+  img.style.position = "absolute";
+  img.style.top = "50px";
+  img.style.left = "50px";
+  img.style.width = "300px";
+  img.style.height = "200px";
+  img.style.cursor = "move";
+  img.draggable = false;
+  editor.appendChild(img);
+
+  let isDragging = false, dragStartX = 0, dragStartY = 0, imgStartLeft = 0, imgStartTop = 0;
+  img.addEventListener('mousedown', e => {
+    e.preventDefault();
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    imgStartLeft = parseInt(img.style.left);
+    imgStartTop = parseInt(img.style.top);
+    document.addEventListener('mousemove', dragMove);
+    document.addEventListener('mouseup', dragEnd);
+  });
+
+  function dragMove(e) {
+    if (!isDragging) return;
+    let dx = e.clientX - dragStartX;
+    let dy = e.clientY - dragStartY;
+    let newLeft = imgStartLeft + dx;
+    let newTop = imgStartTop + dy;
+    if (newLeft < 0) newLeft = 0;
+    if (newTop < 0) newTop = 0;
+    if (newLeft + img.offsetWidth > editor.clientWidth) newLeft = editor.clientWidth - img.offsetWidth;
+    if (newTop + img.offsetHeight > editor.clientHeight) newTop = editor.clientHeight - img.offsetHeight;
+    img.style.left = newLeft + "px";
+    img.style.top = newTop + "px";
+    updateResizeHandle();
   }
-  this.editor.focus();
+
+  function dragEnd() {
+    isDragging = false;
+    document.removeEventListener('mousemove', dragMove);
+    document.removeEventListener('mouseup', dragEnd);
+  }
+
+  const resizeHandle = document.createElement('div');
+  resizeHandle.style.position = "absolute";
+  resizeHandle.style.width = "12px";
+  resizeHandle.style.height = "12px";
+  resizeHandle.style.background = "#0078d4";
+  resizeHandle.style.cursor = "se-resize";
+  editor.appendChild(resizeHandle);
+
+  function updateResizeHandle() {
+    resizeHandle.style.left = (parseInt(img.style.left) + img.offsetWidth - 6) + "px";
+    resizeHandle.style.top = (parseInt(img.style.top) + img.offsetHeight - 6) + "px";
+  }
+  updateResizeHandle();
+
+  let isResizing = false, startWidth = 0, startHeight = 0, startX = 0, startY = 0;
+
+  resizeHandle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    isResizing = true;
+    startWidth = img.offsetWidth;
+    startHeight = img.offsetHeight;
+    startX = e.clientX;
+    startY = e.clientY;
+    document.addEventListener('mousemove', resizeMove);
+    document.addEventListener('mouseup', resizeEnd);
+  });
+
+  function resizeMove(e) {
+    if (!isResizing) return;
+    let dx = e.clientX - startX;
+    let dy = e.clientY - startY;
+    let newWidth = startWidth + dx;
+    let newHeight = startHeight + dy;
+    if (parseInt(img.style.left) + newWidth > editor.clientWidth) newWidth = editor.clientWidth - parseInt(img.style.left);
+    if (parseInt(img.style.top) + newHeight > editor.clientHeight) newHeight = editor.clientHeight - parseInt(img.style.top);
+    img.style.width = newWidth + "px";
+    img.style.height = newHeight + "px";
+    updateResizeHandle();
+  }
+
+  function resizeEnd() {
+    isResizing = false;
+    document.removeEventListener('mousemove', resizeMove);
+    document.removeEventListener('mouseup', resizeEnd);
+  }
+
 });
 
 
