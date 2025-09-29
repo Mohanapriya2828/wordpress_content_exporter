@@ -163,100 +163,110 @@ if (linkBtn) linkBtn.addEventListener('click', () => {
 
 const imagebtn = document.getElementById('insert-image');
 if (imagebtn) imagebtn.addEventListener('click', () => {
-  const url = prompt("enter image url:");
-  if (!url) return;
-
   const editor = document.querySelector('#editor');
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.click();
 
-  const img = document.createElement('img');
-  img.src = url;
-  img.style.position = "absolute";
-  img.style.top = "50px";
-  img.style.left = "50px";
+  fileInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      insertImage(event.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function insertImage(src) {
+    const wrapper = document.createElement('div');
+    wrapper.style.display = "inline-block";
+    wrapper.style.position = "relative";
+    wrapper.style.margin = "5px";
+
+const img = document.createElement('img');
+  img.src = src;
   img.style.width = "300px";
   img.style.height = "200px";
   img.style.cursor = "move";
   img.draggable = false;
-  editor.appendChild(img);
-
-  let isdragging = false, dragstartx = 0, dragstarty = 0, imgstartleft = 0, imgstarttop = 0;
-  img.addEventListener('mousedown', e => {
-    e.preventDefault();
-    isdragging = true;
-    dragstartx = e.clientX;
-    dragstarty = e.clientY;
-    imgstartleft = parseInt(img.style.left);
-    imgstarttop = parseInt(img.style.top);
-    document.addEventListener('mousemove', dragmove);
-    document.addEventListener('mouseup', dragend);
-  });
-
-  function dragmove(e) {
-    if (!isdragging) return;
-    let dx = e.clientX - dragstartx;
-    let dy = e.clientY - dragstarty;
-    let newleft = imgstartleft + dx;
-    let newtop = imgstarttop + dy;
-    if (newleft < 0) newleft = 0;
-    if (newtop < 0) newtop = 0;
-    if (newleft + img.offsetWidth > editor.clientWidth) newleft = editor.clientWidth - img.offsetWidth;
-    if (newtop + img.offsetHeight > editor.clientHeight) newtop = editor.clientHeight - img.offsetHeight;
-    img.style.left = newleft + "px";
-    img.style.top = newtop + "px";
-    updateresizehandle();
-  }
-
-  function dragend() {
-    isdragging = false;
-    document.removeEventListener('mousemove', dragmove);
-    document.removeEventListener('mouseup', dragend);
-  }
-
   const resizehandle = document.createElement('div');
   resizehandle.style.position = "absolute";
   resizehandle.style.width = "12px";
   resizehandle.style.height = "12px";
+  resizehandle.style.right = "0";
+  resizehandle.style.bottom = "0";
   resizehandle.style.background = "#0078d4";
   resizehandle.style.cursor = "se-resize";
-  editor.appendChild(resizehandle);
 
-  function updateresizehandle() {
-    resizehandle.style.left = (parseInt(img.style.left) + img.offsetWidth - 6) + "px";
-    resizehandle.style.top = (parseInt(img.style.top) + img.offsetHeight - 6) + "px";
+  wrapper.appendChild(img);
+  wrapper.appendChild(resizehandle);
+  editor.appendChild(wrapper);
+
+
+    let isdragging = false, dragstartx = 0, dragstarty = 0, imgstartleft = 0, imgstarttop = 0;
+    img.addEventListener('mousedown', e => {
+      e.preventDefault();
+      isdragging = true;
+      dragstartx = e.clientX;
+      dragstarty = e.clientY;
+      imgstartleft = parseInt(img.style.left);
+      imgstarttop = parseInt(img.style.top);
+      document.addEventListener('mousemove', dragmove);
+      document.addEventListener('mouseup', dragend);
+    });
+
+    function dragmove(e) {
+      if (!isdragging) return;
+      const dx = e.clientX - dragstartx;
+      const dy = e.clientY - dragstarty;
+      wrapper.style.transform = `translate(${dx}px, ${dy}px)`;
+    }
+
+  function dragend(e) {
+  isdragging = false;
+  document.removeEventListener('mousemove', dragmove);
+  document.removeEventListener('mouseup', dragend);
+  wrapper.style.transform = "none";
+  const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+  if (range) {
+    range.insertNode(wrapper);
   }
-  updateresizehandle();
+} 
 
-  let isresizing = false, startwidth = 0, startheight = 0, startx = 0, starty = 0;
+    let isresizing = false, startwidth = 0, startheight = 0, startx = 0, starty = 0;
+    resizehandle.addEventListener('mousedown', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      isresizing = true;
+      startwidth = img.offsetWidth;
+      startheight = img.offsetHeight;
+      startx = e.clientX;
+      starty = e.clientY;
+      document.addEventListener('mousemove', resizemove);
+      document.addEventListener('mouseup', resizeend);
+    });
 
-  resizehandle.addEventListener('mousedown', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    isresizing = true;
-    startwidth = img.offsetWidth;
-    startheight = img.offsetHeight;
-    startx = e.clientX;
-    starty = e.clientY;
-    document.addEventListener('mousemove', resizemove);
-    document.addEventListener('mouseup', resizeend);
-  });
+    function resizemove(e) {
+      if (!isresizing) return;
+      let dx = e.clientX - startx;
+      let dy = e.clientY - starty;
+      let newwidth = startwidth + dx;
+      let newheight = startheight + dy;
+      if (parseInt(img.style.left) + newwidth > editor.clientWidth) newwidth = editor.clientWidth - parseInt(img.style.left);
+      if (parseInt(img.style.top) + newheight > editor.clientHeight) newheight = editor.clientHeight - parseInt(img.style.top);
+      img.style.width = newwidth + "px";
+      img.style.height = newheight + "px";
+      updateresizehandle();
+    }
 
-  function resizemove(e) {
-    if (!isresizing) return;
-    let dx = e.clientX - startx;
-    let dy = e.clientY - starty;
-    let newwidth = startwidth + dx;
-    let newheight = startheight + dy;
-    if (parseInt(img.style.left) + newwidth > editor.clientWidth) newwidth = editor.clientWidth - parseInt(img.style.left);
-    if (parseInt(img.style.top) + newheight > editor.clientHeight) newheight = editor.clientHeight - parseInt(img.style.top);
-    img.style.width = newwidth + "px";
-    img.style.height = newheight + "px";
-    updateresizehandle();
-  }
-
-  function resizeend() {
-    isresizing = false;
-    document.removeEventListener('mousemove', resizemove);
-    document.removeEventListener('mouseup', resizeend);
+    function resizeend() {
+      isresizing = false;
+      document.removeEventListener('mousemove', resizemove);
+      document.removeEventListener('mouseup', resizeend);
+    }
   }
 });
 
