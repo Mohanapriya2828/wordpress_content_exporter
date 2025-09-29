@@ -1,44 +1,68 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: #f4f4f4;
+  background: #f0f2f5;
   color: #333;
 }
 
 header {
-  background: #fff;
-  color: black;
-  padding: 8px 15px;
+  background: #2b2b2b;
+  color: #fff;
+  padding: 12px 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
+  letter-spacing: 1px;
 }
 
 #ribbon {
-  background: #ddd;
-  border-bottom: 1px solid #aaa;
-  padding: 5px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ccc;
+  padding: 8px 10px;
+  display: flex;
+  gap: 5px;
 }
 
 #ribbon button {
-  padding: 6px 12px;
+  padding: 8px 14px;
   font-size: 14px;
   margin-right: 5px;
+  border: none;
+  border-radius: 6px;
+  background: #e0e0e0;
   cursor: pointer;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+  transition: 0.2s all;
+}
+
+#ribbon button:hover {
+  background: #d0d0d0;
+  transform: translateY(-2px);
+}
+
+#ribbon button:active {
+  background: #0078d4;
+  color: white;
+  transform: scale(0.97);
 }
 
 #toolbar {
-  background: #eee;
+  background: #fafafa;
   border-bottom: 1px solid #ccc;
-  padding: 8px;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .panel {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .panel.hidden {
@@ -46,57 +70,48 @@ header h2 {
 }
 
 #toolbar button,
-#toolbar select {
-  padding: 5px 10px;
+#toolbar select,
+#home-panel input[type="color"] {
+  padding: 6px 10px;
   font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: 0.2s all;
 }
-#toolbar button[aria-pressed="true"] {
-  background: #0078d4;
+
+#toolbar button:hover,
+#toolbar select:hover,
+#home-panel input[type="color"]:hover {
+  background-color: #e6f0ff;
+  transform: scale(1.05);
+}
+
+#toolbar button.active {
+  background-color: #0078d4;
   color: white;
   border-color: #005a9e;
+  box-shadow: 0 0 6px rgba(0,120,212,0.6);
 }
 
 #editor {
-  min-height: 400px;
+  min-height: 500px;
   margin: 20px;
-  padding: 15px;
+  padding: 20px;
   background: #fff;
   border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-#home-panel input[type="color"] {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: none;
-  cursor: pointer;
-  vertical-align: middle;
-}
-
-#structure-panel {
-  display: flex;
-  gap: 8px;
-  padding: 5px;
-}
-
-#structure-panel.hidden {
-  display: none;
-}
-
-#structure-panel button {
-  padding: 5px 10px;
-  font-size: 14px;
-  cursor: pointer;
-}
-#editor {
-  min-height: 400px;
-  margin: 20px;
-  padding: 15px;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   white-space: pre-wrap;
+  font-size: 16px;
+  line-height: 1.6;
+  transition: 0.2s all;
+}
+
+#editor:focus {
+  outline: none;
+  border-color: #0078d4;
+  box-shadow: 0 0 8px rgba(0,120,212,0.4);
 }
 
 #editor ul {
@@ -114,29 +129,33 @@ header h2 {
 }
 
 #editor li {
-  margin: 0.2em 0;
+  margin: 0.3em 0;
 }
 
 button.special-action {
-  background: #ddd;
-  border-bottom: 1px solid #aaa;
-  color: black;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  color: #333;
   font-weight: bold;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  padding: 8px 14px;
+  border-radius: 6px;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+  transition: 0.2s all;
 }
 
 button.special-action.active {
   background-color: #0078d4;
+  color: white;
   transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(0,120,212,0.5);
 }
+
 .highlight {
-  background-color: yellow;
+  background-color: #fff3b0;
 }
+
 .current-match {
-  background-color: orange;
+  background-color: #ffa500;
 }
 
 body.light-mode {

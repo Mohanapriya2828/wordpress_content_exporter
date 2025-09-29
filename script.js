@@ -23,6 +23,7 @@ class AssignmentEditor {
     this.clear_format_btn = document.getElementById('clear-format');
     this.reset_btn = document.getElementById('reset-editor');
     this.copy_plain_btn = document.getElementById('copy-plain');
+    this.copy_html_btn = document.getElementById('copy-html');
     this.preview_btn = document.getElementById('preview');
     this.exportTab = document.getElementById('export-tab');
     this.exportPanel = document.getElementById('export-panel');
@@ -216,6 +217,23 @@ this.copy_plain_btn.addEventListener('click', () => {
   setTimeout(() => this.copy_plain_btn.classList.remove('clicked'), 500);
 });
 
+if(this.copy_html_btn) {
+  this.copy_html_btn.addEventListener('click', () => {
+    const temp = document.createElement('textarea');
+    temp.value = this.editor.innerHTML;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    document.body.removeChild(temp);
+    this.copy_html_btn.classList.add('clicked');
+    setTimeout(() => this.copy_html_btn.classList.remove('clicked'), 500);
+  });
+  this.copy_html_btn.classList.add("special-action");
+  this.copy_html_btn.addEventListener("click", () => {
+    this.copy_html_btn.classList.toggle("active");
+  });
+}
+
 this.preview_btn.addEventListener('click', () => {
   const win = window.open('', '_blank', 'width=800,height=600');
   win.document.write('<html><head><title>preview</title></head><body>');
@@ -392,8 +410,7 @@ if (this.darkModeBtn) {
 
 if (this.autosaveTab && this.autosavePanel) {
   this.autosaveTab.addEventListener("click", () => {
-    document.querySelectorAll(".panel").forEach(p => p.classList.add("hidden"));
-    this.autosavePanel.classList.remove("hidden");
+    this.togglePanel(this.autosavePanel, this.autosaveTab);
   });
 }
 
@@ -409,8 +426,6 @@ this.editor.addEventListener("input", () => {
     localStorage.setItem("editorContent", this.editor.innerHTML);
   }
 });
-
-
 
 }
 
@@ -508,6 +523,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (editor.alignmentSelect) {
     editor.alignmentSelect.value = editor.currentAlignment || "left";
   }
+});
+document.querySelectorAll('#toolbar button[data-command]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.execCommand(btn.dataset.command, false, null);
+    btn.classList.toggle("active");
+  });
 });
 
 
