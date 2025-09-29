@@ -387,7 +387,91 @@ if (tablebtn) tablebtn.addEventListener('click', () => {
     document.removeEventListener('mouseup', resizeend);
   }
 
-  
+  table.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    const menu = document.createElement('div');
+    menu.style.position = 'absolute';
+    menu.style.top = e.clientY + 'px';
+    menu.style.left = e.clientX + 'px';
+    menu.style.background = '#fff';
+    menu.style.border = '1px solid #000';
+    menu.style.padding = '5px';
+    menu.style.zIndex = 1000;
+
+    const addrow = document.createElement('div');
+    addrow.textContent = 'add row';
+    addrow.style.cursor = 'pointer';
+    addrow.onclick = () => {
+      const tr = document.createElement('tr');
+      for (let i = 0; i < table.rows[0].cells.length; i++) {
+        const td = document.createElement('td');
+        td.style.border = '1px solid #000';
+        td.style.padding = '5px';
+        td.style.wordBreak = 'break-word';
+        td.style.overflowWrap = 'break-word';
+        td.style.maxWidth = '200px';
+        td.contentEditable = 'true';
+        tr.appendChild(td);
+      }
+      table.appendChild(tr);
+      document.body.removeChild(menu);
+    };
+    menu.appendChild(addrow);
+
+    const delrow = document.createElement('div');
+    delrow.textContent = 'delete row';
+    delrow.style.cursor = 'pointer';
+    delrow.onclick = () => {
+      if (table.rows.length > 1) table.deleteRow(table.rows.length - 1);
+      document.body.removeChild(menu);
+    };
+    menu.appendChild(delrow);
+
+    const addcol = document.createElement('div');
+    addcol.textContent = 'add column';
+    addcol.style.cursor = 'pointer';
+    addcol.onclick = () => {
+      for (let r = 0; r < table.rows.length; r++) {
+        const td = document.createElement('td');
+        td.style.border = '1px solid #000';
+        td.style.padding = '5px';
+        td.style.wordBreak = 'break-word';
+        td.style.overflowWrap = 'break-word';
+        td.style.maxWidth = '200px';
+        td.contentEditable = 'true';
+        table.rows[r].appendChild(td);
+      }
+      document.body.removeChild(menu);
+    };
+    menu.appendChild(addcol);
+
+    const delcol = document.createElement('div');
+    delcol.textContent = 'delete column';
+    delcol.style.cursor = 'pointer';
+    delcol.onclick = () => {
+      if (table.rows[0].cells.length > 1) {
+        for (let r = 0; r < table.rows.length; r++) table.rows[r].deleteCell(table.rows[r].cells.length - 1);
+      }
+      document.body.removeChild(menu);
+    };
+    menu.appendChild(delcol);
+
+    const deltable = document.createElement('div');
+    deltable.textContent = 'delete table';
+    deltable.style.cursor = 'pointer';
+    deltable.onclick = () => {
+      editor.removeChild(table);
+      editor.removeChild(resizehandle);
+      editor.removeChild(draghandle);
+      document.body.removeChild(menu);
+    };
+    menu.appendChild(deltable);
+
+    document.body.appendChild(menu);
+    document.addEventListener('click', () => {
+      if (menu.parentNode) document.body.removeChild(menu);
+    }, { once: true });
+  });
 });
 
 this.structureButtons.forEach(btn => {
