@@ -161,31 +161,104 @@ if (linkBtn) linkBtn.addEventListener('click', () => {
   this.editor.focus();
 });
 
-const imageBtn = document.getElementById('insert-image');
-if (imageBtn) imageBtn.addEventListener('click', () => {
-  const url = prompt("Enter image URL:");
-  if (url) document.execCommand('insertImage', false, url);
-  this.editor.focus();
-});
+const imagebtn = document.getElementById('insert-image');
+if (imagebtn) imagebtn.addEventListener('click', () => {
+  const url = prompt("enter image url:");
+  if (!url) return;
 
-const tableBtn = document.getElementById('insert-table');
-if (tableBtn) tableBtn.addEventListener('click', () => {
-  const rows = parseInt(prompt("Rows:"), 10);
-  const cols = parseInt(prompt("Columns:"), 10);
-  if (rows > 0 && cols > 0) {
-    let table = '<table border="1">';
-    for (let r = 0; r < rows; r++) {
-      table += '<tr>';
-      for (let c = 0; c < cols; c++) table += '<td>&nbsp;</td>';
-      table += '</tr>';
-    }
-    table += '</table><br>';
-    document.execCommand('insertHTML', false, table);
+  const editor = document.querySelector('#editor');
+
+  const img = document.createElement('img');
+  img.src = url;
+  img.style.position = "absolute";
+  img.style.top = "50px";
+  img.style.left = "50px";
+  img.style.width = "300px";
+  img.style.height = "200px";
+  img.style.cursor = "move";
+  img.draggable = false;
+  editor.appendChild(img);
+
+  let isdragging = false, dragstartx = 0, dragstarty = 0, imgstartleft = 0, imgstarttop = 0;
+  img.addEventListener('mousedown', e => {
+    e.preventDefault();
+    isdragging = true;
+    dragstartx = e.clientX;
+    dragstarty = e.clientY;
+    imgstartleft = parseInt(img.style.left);
+    imgstarttop = parseInt(img.style.top);
+    document.addEventListener('mousemove', dragmove);
+    document.addEventListener('mouseup', dragend);
+  });
+
+  function dragmove(e) {
+    if (!isdragging) return;
+    let dx = e.clientX - dragstartx;
+    let dy = e.clientY - dragstarty;
+    let newleft = imgstartleft + dx;
+    let newtop = imgstarttop + dy;
+    if (newleft < 0) newleft = 0;
+    if (newtop < 0) newtop = 0;
+    if (newleft + img.offsetWidth > editor.clientWidth) newleft = editor.clientWidth - img.offsetWidth;
+    if (newtop + img.offsetHeight > editor.clientHeight) newtop = editor.clientHeight - img.offsetHeight;
+    img.style.left = newleft + "px";
+    img.style.top = newtop + "px";
+    updateresizehandle();
   }
-  this.editor.focus();
+
+  function dragend() {
+    isdragging = false;
+    document.removeEventListener('mousemove', dragmove);
+    document.removeEventListener('mouseup', dragend);
+  }
+
+  const resizehandle = document.createElement('div');
+  resizehandle.style.position = "absolute";
+  resizehandle.style.width = "12px";
+  resizehandle.style.height = "12px";
+  resizehandle.style.background = "#0078d4";
+  resizehandle.style.cursor = "se-resize";
+  editor.appendChild(resizehandle);
+
+  function updateresizehandle() {
+    resizehandle.style.left = (parseInt(img.style.left) + img.offsetWidth - 6) + "px";
+    resizehandle.style.top = (parseInt(img.style.top) + img.offsetHeight - 6) + "px";
+  }
+  updateresizehandle();
+
+  let isresizing = false, startwidth = 0, startheight = 0, startx = 0, starty = 0;
+
+  resizehandle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    isresizing = true;
+    startwidth = img.offsetWidth;
+    startheight = img.offsetHeight;
+    startx = e.clientX;
+    starty = e.clientY;
+    document.addEventListener('mousemove', resizemove);
+    document.addEventListener('mouseup', resizeend);
+  });
+
+  function resizemove(e) {
+    if (!isresizing) return;
+    let dx = e.clientX - startx;
+    let dy = e.clientY - starty;
+    let newwidth = startwidth + dx;
+    let newheight = startheight + dy;
+    if (parseInt(img.style.left) + newwidth > editor.clientWidth) newwidth = editor.clientWidth - parseInt(img.style.left);
+    if (parseInt(img.style.top) + newheight > editor.clientHeight) newheight = editor.clientHeight - parseInt(img.style.top);
+    img.style.width = newwidth + "px";
+    img.style.height = newheight + "px";
+    updateresizehandle();
+  }
+
+  function resizeend() {
+    isresizing = false;
+    document.removeEventListener('mousemove', resizemove);
+    document.removeEventListener('mouseup', resizeend);
+  }
 });
-
-
 this.structureButtons.forEach(btn => {
   if (btn.id === "ulBtn" || btn.id === "olBtn") return;
   btn.type = 'button';
